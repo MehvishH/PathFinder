@@ -1,98 +1,85 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { ScrollView, Text, View, StyleSheet, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
+import { FLOWS, FlowKey } from '@/data/quizzes';
+import { colors, gradients, radius, spacing } from '@/constants/colors';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
+export default function Home() {
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <SafeAreaView style={styles.safe} edges={['top']}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <LinearGradient colors={gradients.hero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
+          <View style={styles.logoBadge}>
+            <Ionicons name="compass-outline" size={28} color={colors.white} />
+          </View>
+          <Text style={styles.heroTitle}>PathFinder</Text>
+          <Text style={styles.heroSubtitle}>
+            Discover the right path — whether you're starting out, coming back, or changing direction.
+          </Text>
+        </LinearGradient>
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+        <Text style={styles.sectionLabel}>Choose your journey</Text>
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+        {(Object.keys(FLOWS) as FlowKey[]).map((key) => {
+          const flow = FLOWS[key];
+          return (
+            <Pressable
+              key={key}
+              style={({ pressed }) => [styles.flowCard, pressed && styles.pressed]}
+              onPress={() => router.push(`/quiz/${key}`)}>
+              <View style={styles.flowIcon}>
+                <Ionicons name={flow.icon as any} size={26} color={colors.primary} />
+              </View>
+              <View style={styles.flowText}>
+                <Text style={styles.flowTitle}>{flow.title}</Text>
+                <Text style={styles.flowSubtitle}>{flow.subtitle}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={22} color={colors.textFaint} />
+            </Pressable>
+          );
+        })}
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        <Pressable
+          style={({ pressed }) => [styles.assistantCard, pressed && styles.pressed]}
+          onPress={() => router.push('/assistant')}>
+          <Ionicons name="sparkles" size={22} color={colors.white} />
+          <View style={styles.flowText}>
+            <Text style={styles.assistantTitle}>Ask the AI Career Coach</Text>
+            <Text style={styles.assistantSubtitle}>Get answers to any career or education question</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={22} color={colors.white} />
+        </Pressable>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
+  safe: { flex: 1, backgroundColor: colors.bg },
+  content: { padding: spacing.lg, paddingBottom: spacing.xxl, gap: spacing.md },
+  hero: { borderRadius: radius.xl, padding: spacing.xl, marginBottom: spacing.sm },
+  logoBadge: {
+    width: 56, height: 56, borderRadius: radius.lg, backgroundColor: 'rgba(255,255,255,0.2)',
+    alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md,
   },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+  heroTitle: { fontSize: 32, fontWeight: '800', color: colors.white },
+  heroSubtitle: { fontSize: 15, color: 'rgba(255,255,255,0.9)', marginTop: spacing.sm, lineHeight: 22 },
+  sectionLabel: { fontSize: 13, fontWeight: '700', color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.5, marginTop: spacing.sm },
+  flowCard: {
+    flexDirection: 'row', alignItems: 'center', gap: spacing.md, backgroundColor: colors.card,
+    borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, padding: spacing.lg,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+  flowIcon: { width: 48, height: 48, borderRadius: radius.md, backgroundColor: colors.indigo50, alignItems: 'center', justifyContent: 'center' },
+  flowText: { flex: 1 },
+  flowTitle: { fontSize: 17, fontWeight: '700', color: colors.text },
+  flowSubtitle: { fontSize: 13, color: colors.textMuted, marginTop: 2, lineHeight: 18 },
+  assistantCard: {
+    flexDirection: 'row', alignItems: 'center', gap: spacing.md, backgroundColor: colors.primary,
+    borderRadius: radius.lg, padding: spacing.lg, marginTop: spacing.sm,
   },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
+  assistantTitle: { fontSize: 17, fontWeight: '700', color: colors.white },
+  assistantSubtitle: { fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 2 },
+  pressed: { opacity: 0.7 },
 });

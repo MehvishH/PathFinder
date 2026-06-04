@@ -38,8 +38,8 @@ export function Button({ title, onPress, variant = 'primary', loading, disabled,
           <Text style={[styles.label, { color: colors.white }]}>{title}</Text>
         )}
       </LinearGradient>
-    );
-  }
+    </Pressable>
+  );
 }
 
 const styles = StyleSheet.create({

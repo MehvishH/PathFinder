@@ -3,6 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.69.0",
     "@expo/metro-runtime": "~56.0.13",
     "@expo/ui": "~56.0.15",
     "@expo/vector-icons": "^15.0.2",

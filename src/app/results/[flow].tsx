@@ -10,6 +10,11 @@ import { Button } from '@/components/ui/Button';
 import { getResult } from '@/lib/store';
 import { colors, radius, spacing } from '@/constants/colors';
 
+// Pre-render one static page per flow for the website build.
+export function generateStaticParams(): { flow: FlowKey }[] {
+  return (Object.keys(FLOWS) as FlowKey[]).map((flow) => ({ flow }));
+}
+
 export default function ResultsScreen() {
   const { flow } = useLocalSearchParams<{ flow: FlowKey }>();
   const meta = FLOWS[flow as FlowKey];

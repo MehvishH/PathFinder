@@ -12,6 +12,11 @@ import { colors, radius, spacing } from '@/constants/colors';
 
 type Answer = string | string[];
 
+// Pre-render one static page per flow for the website build.
+export function generateStaticParams(): { flow: FlowKey }[] {
+  return (Object.keys(FLOWS) as FlowKey[]).map((flow) => ({ flow }));
+}
+
 export default function QuizScreen() {
   const { flow } = useLocalSearchParams<{ flow: FlowKey }>();
   const meta = FLOWS[flow as FlowKey];
